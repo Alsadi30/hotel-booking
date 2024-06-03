@@ -29,3 +29,63 @@ jobs:
           file: ./services/auth/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+      - name: Extract meta information for booking-management
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: sadi001/hotel-booking-booking-management
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./services/booking-management
+          file: ./services/booking-management/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}          
+      - name: Extract meta information for user
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: sadi001/hotel-booking-user
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./services/user
+          file: ./services/user/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+      - name: Extract meta information for room
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: sadi001/hotel-booking-room
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./services/room
+          file: ./services/room/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+      - name: Extract meta information for hotel
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: sadi001/hotel-booking-hotel
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./services/hotel
+          file: ./services/hotel/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+      - name: Extract meta information for email
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: sadi001/hotel-booking-email
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./services/email
+          file: ./services/email/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}                                        
