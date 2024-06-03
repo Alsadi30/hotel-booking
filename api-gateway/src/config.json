@@ -1,0 +1,137 @@
+{
+  "services": {
+    "hotel": {
+      "url": "http://host.docker.internal:5004",
+      "routes": [
+        {
+          "path": "/hotels",
+          "methods": [
+            "get"
+          ],
+          "middlewares": []
+        },
+        {
+          "path": "/hotels",
+          "methods": [
+            "post"
+          ],
+          "middlewares": [
+            "auth"
+          ]
+        },
+        {
+          "path": "/hotels/:id",
+          "methods": [
+            "get"
+          ],
+          "middlewares": []
+        }
+      ]
+    },
+    "room": {
+      "url": "http://host.docker.internal:5005",
+      "routes": [
+        {
+          "path": "/rooms",
+          "methods": [
+            "get"
+          ],
+          "middlewares": []
+        },
+        {
+          "path": "/rooms",
+          "methods": [
+            "post"
+          ],
+          "middlewares": [
+            "auth"
+          ]
+        },
+        {
+          "path": "/rooms/:id",
+          "methods": [
+            "get"
+          ],
+          "middlewares": []
+        }
+      ]
+    },
+    "booking-management": {
+      "url": "http://host.docker.internal:5006",
+      "routes": [
+        {
+          "path": "/bookings",
+          "methods": [
+            "get"
+          ],
+          "middlewares": [
+            "auth"
+          ]
+        },
+        {
+          "path": "/bookings",
+          "methods": [
+            "post"
+          ],
+          "middlewares": [
+            "auth"
+          ]
+        },
+        {
+          "path": "/bookings/:id",
+          "methods": [
+            "get"
+          ],
+          "middlewares": []
+        }
+      ]
+    },
+    "auth": {
+      "url": "http://host.docker.internal:5001",
+      "routes": [
+        {
+          "path": "/auth/register",
+          "methods": [
+            "post"
+          ],
+          "middlewares": []
+        },
+        {
+          "path": "/auth/login",
+          "methods": [
+            "post"
+          ],
+          "middlewares": []
+        },
+        {
+          "path": "/auth/verify-email",
+          "methods": [
+            "post"
+          ],
+          "middlewares": []
+        },
+        {
+          "path": "/auth/verify-token",
+          "methods": [
+            "post"
+          ],
+          "middlewares": []
+        }
+      ]
+    },
+    "user": {
+      "url": "http://host.docker.internal:4004",
+      "routes": [
+        {
+          "path": "/users/:id",
+          "methods": [
+            "get"
+          ],
+          "middlewares": [
+            "auth"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,301 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:11
+    container_name: postgres
+    restart: on-failure
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres1:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      - micro-network      
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: on-failure
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+      - "5051:443"
+    networks:
+      - micro-network
+
+  auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - SERVICE_NAME="Auth-Service"
+      - DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/auth?schema=public"
+    depends_on:
+      - postgres
+    volumes:
+      - ./services/auth:/auth
+    networks:
+      - micro-network
+      
+  user:
+    build:
+      context: ./services/user
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - SERVICE_NAME="User-Service"
+      - DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/user-db?schema=public"
+    depends_on:
+      - postgres
+    volumes:
+      - ./services/user:/user
+    networks:
+      - micro-network
+
+  hotel:
+    build:
+      context: ./services/hotel
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5004"
+    environment:
+      - PORT=5004
+      - SERVICE_NAME="Hotel-Service"
+      - DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/hotel-db?schema=public"
+    depends_on:
+      - postgres
+    volumes:
+      - ./services/hotel:/hotel
+    networks:
+      - micro-network
+
+  room:
+    build:
+      context: ./services/room
+      dockerfile: Dockerfile
+    ports:
+      - "5005:5005"
+    environment:
+      - PORT=5005
+      - SERVICE_NAME="Room-Service"
+      - DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/room-db?schema=public"
+    depends_on:
+      - postgres
+    volumes:
+      - ./services/room:/room
+    networks:
+      - micro-network
+
+  booking-management:
+    build:
+      context: ./services/booking-management
+      dockerfile: Dockerfile
+    ports:
+      - "5006:5006"
+    environment:
+      - PORT=5006
+      - SERVICE_NAME="Booking-Management-Service"
+      - DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/booking-db?schema=public"
+    depends_on:
+      - postgres
+    volumes:
+      - ./services/booking-management:/booking-management
+    networks:
+      - micro-network
+       
+  email:
+    build:
+      context: ./services/email
+      dockerfile: Dockerfile
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - SERVICE_NAME="Email-Service"
+      - SMTP_HOST=host.docker.internal
+      - SMTP_PORT=1025
+      - DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/email-db?schema=public"
+    depends_on:
+      - postgres
+      - mailhog
+    volumes:
+      - ./services/email:/email
+    networks:
+      - micro-network      
+ 
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./api-gateway:/api-gateway
+    networks:
+      - micro-network   
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog2
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    volumes:
+      - mailhog:/var/lib/mailhog
+    networks:
+      - micro-network   
+
+  redis-stack:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+      - "8002:8001"
+    volumes:
+      - redis-stack:/var/lib/redis-stack
+    environment:
+      - REDIS_ARGS=--save 900 1
+    networks:
+      - micro-network
+
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    ports:
+      - "5672:5672" # RabbitMQ main port
+      - "15672:15672" # RabbitMQ management UI port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - micro-network
+
+  # kong-database:
+  #   image: postgres:9.6
+  #   container_name: kong-postgres
+  #   restart: on-failure
+  #   networks:
+  #     - kong-net
+  #   volumes:
+  #     - kong_data:/var/lib/postgresql/data
+  #   environment:
+  #     POSTGRES_USER: kong
+  #     POSTGRES_PASSWORD: kong
+  #     POSTGRES_DB: kong
+  #   ports:
+  #     - "5433:5433"
+  #   healthcheck:
+  #     test: ["CMD", "pg_isready", "-U", "kong"]
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 3
+
+  kong-migration:
+    build:
+      context: ./config
+      dockerfile: Dockerfile
+    command: kong migrations bootstrap
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres
+      KONG_PG_USER: postgres
+      KONG_PG_PASSWORD: postgres
+      KONG_PG_DATABASE: postgres
+    depends_on:
+      - postgres
+    networks:
+      - micro-network
+
+  kong:
+    build:
+      context: ./config
+      dockerfile: Dockerfile
+    container_name: kong
+    restart: on-failure
+    networks:
+      - micro-network
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres
+      KONG_PG_USER: postgres
+      KONG_PG_PASSWORD: postgres
+      KONG_PG_DATABASE: postgres
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_PLUGINSERVER_NAMES: js
+      # KONG_PLUGINSERVER_JS_SOCKET: /usr/local/kong/js_pluginserver.sock
+      # KONG_PLUGINSERVER_JS_START_CMD: /usr/local/bin/kong-js-pluginserver -v --plugins-directory /usr/local/kong/js-plugins
+      # KONG_PLUGINSERVER_JS_QUERY_CMD: /usr/local/bin/kong-js-pluginserver --plugins-directory /usr/local/kong/js-plugins --dump-all-plugins
+      # KONG_PLUGINS: bundled,oidc
+    depends_on:
+      - postgres
+      - kong-migration
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8443:8443"
+      - "8444:8444"
+
+  kong-prepare:
+    image: kong:latest
+    command: kong prepare
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres
+      KONG_PG_USER: postgres
+      KONG_PG_PASSWORD: postgres
+      KONG_PG_DATABASE: postgres
+    depends_on:
+      - postgres
+    networks:
+      - micro-network
+
+  konga:
+    image: pantsel/konga:latest
+    restart: always
+    networks:
+      - micro-network
+    environment:
+      DB_ADAPTER: "postgres"
+      DB_HOST: "postgres"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+      DB_DATABASE: "konga"
+      KONGA_HOOK_TIMEOUT: 120000
+    depends_on:
+      - postgres
+      - kong
+    ports:
+      - "1337:1337"
+
+networks:
+  micro-network:
+    driver: bridge
+  # keycloak-net:
+  #   driver: bridge
+  # kong-net:
+  #   driver: bridge
+
+volumes:
+  postgres1:
+  mailhog:
+  redis-stack:
+  rabbitmq_data:
+  kong_data: {}
