@@ -25,7 +25,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./services/auth
           file: ./services/auth/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
