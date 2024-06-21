@@ -1,0 +1,22 @@
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x","linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:postgres@host.docker.internal:5432/email-db?schema=public"
+}
+
+
+
+model Email {
+  id        String   @id @default(cuid())
+  sender    String
+  recipient String
+  subject   String
+  body      String
+  source    String
+  sentAt    DateTime @default(now())
+}
