@@ -76,6 +76,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/hotel?schema=public
     depends_on:
       - postgres
+      - rabbitmq
     networks:
       - micro-network 
 
@@ -91,6 +92,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/room?schema=public
     depends_on:
       - postgres
+      - rabbitmq
     networks:
       - micro-network 
 
@@ -106,6 +108,8 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/booking-management?schema=public
     depends_on:
       - postgres
+      - rabbitmq
+      - redis-stack
     networks:
       - micro-network 
        
@@ -121,6 +125,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/email?schema=public
     depends_on:
       - postgres
+      - mailhog
     networks:
       - micro-network        
  
