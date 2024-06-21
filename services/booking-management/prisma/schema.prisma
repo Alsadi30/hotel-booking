@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x","linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"  
+  url      =  "postgresql://postgres:postgres@host.docker.internal:5432/booking_db?schema=public"
+}
+
+enum BookingStatus {
+  Booked
+  Confirmed
+  Canceled
+} 
+
+
+model Booking {
+  id             String   @id @default(cuid())
+  hotel_id       String?
+  userEmail      String?
+  user_id        String
+  room_id        Json
+  check_in_date  DateTime
+  check_out_date DateTime  
+  subtotal       Int 
+  discount       Int?
+  total_price    Int
+  booking_status BookingStatus @default(Booked)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+

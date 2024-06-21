@@ -1,0 +1,381 @@
+version: "3.8"
+
+services:
+  postgres2:
+    image: postgres:11
+    container_name: postgres2
+    restart: on-failure
+    environment:
+      POSTGRES_USER: postgres2
+      POSTGRES_PASSWORD: postgres2
+      POSTGRES_DB: postgres2
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres12:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres2"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      - micro2-network      
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: on-failure
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+      - "5051:443"
+    networks:
+      - micro2-network
+
+  # auth:
+  #   build:
+  #     context: ./path/to/auth-service-directory  # Specify the path to the Dockerfile
+  #     dockerfile: Dockerfile                    # This is optional if your Dockerfile is named 'Dockerfile'
+  #   container_name: auth_service
+  #   restart: on-failure
+  #   ports:
+  #     - "5001:5001"
+  #   environment:
+  #     - PORT=5001
+  #     - SERVICE_NAME=Auth-Service
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/auth?schema=public
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - micro-network
+
+  auth:
+    build:
+     context: ./services/auth
+     dockerfile: Dockerfile 
+    container_name: auth_service
+    restart: on-failure
+    ports:
+      - "6001:6001"
+    environment:
+      - PORT=6001
+      - SERVICE_NAME=Auth-Service
+      - DATABASE_URL=postgresql://postgres2:postgres2@postgres2:5432/auth?schema=public
+    depends_on:
+      - postgres2
+    networks:
+      - micro2-network 
+
+  user:
+    build:
+     context: ./services/user
+     dockerfile: Dockerfile 
+    container_name: user_service
+    restart: on-failure
+    ports:
+      - "6002:6002"
+    environment:
+      - PORT=6002
+      - SERVICE_NAME=Auth-Service
+      - DATABASE_URL=postgresql://postgres2:postgres2@postgres2:5432/user?schema=public
+    depends_on:
+      - postgres2
+    networks:
+      - micro2-network       
+  # user:
+  #   image: sadi001/hotel-booking-user:main  # Use the Docker Hub image
+  #   container_name: user_service
+  #   restart: on-failure
+  #   ports:
+  #     - "5002:5002"
+  #   environment:
+  #     - PORT=5002
+  #     - SERVICE_NAME=User-Service
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/user?schema=public
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - micro-network       
+
+  # hotel:
+  #   image: sadi001/hotel-booking-hotel:main  # Use the Docker Hub image
+  #   container_name: hotel_service
+  #   restart: on-failure
+  #   ports:
+  #     - "5004:5004"
+  #   environment:
+  #     - PORT=5004
+  #     - SERVICE_NAME=Hotel-Service
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/hotel?schema=public
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - micro-network 
+
+  hotel:
+    build:
+     context: ./services/hotel
+     dockerfile: Dockerfile 
+    container_name: hotel_service
+    restart: on-failure
+    ports:
+      - "6004:6004"
+    environment:
+      - PORT=6004
+      - SERVICE_NAME=Hotel-Service
+      - DATABASE_URL=postgresql://postgres2:postgres2@postgres2:5432/hotel?schema=public
+    depends_on:
+      - postgres2
+    networks:
+      - micro2-network 
+      
+  # room:
+  #   image: sadi001/hotel-booking-room:main  # Use the Docker Hub image
+  #   container_name: room_service
+  #   restart: on-failure
+  #   ports:
+  #     - "5005:5005"
+  #   environment:
+  #     - PORT=5005
+  #     - SERVICE_NAME=Room-Service
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/room?schema=public
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - micro-network 
+  
+  room:
+    build:
+     context: ./services/room
+     dockerfile: Dockerfile 
+    container_name: room_service
+    restart: on-failure
+    ports:
+      - "6005:6005"
+    environment:
+      - PORT=6005
+      - SERVICE_NAME=Room-Service
+      - DATABASE_URL=postgresql://postgres2:postgres2@postgres2:5432/room?schema=public
+    depends_on:
+      - postgres2
+    networks:
+      - micro2-network   
+
+  # booking-management:
+  #   image: sadi001/hotel-booking-booking-management:main 
+  #   container_name: booking-management_service
+  #   restart: on-failure
+  #   ports:
+  #     - "5006:5006"
+  #   environment:
+  #     - PORT=5006
+  #     - SERVICE_NAME=Booking-management-Service
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/booking-management?schema=public
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - micro-network 
+       
+  booking-management:
+    build:
+     context: ./services/booking-management
+     dockerfile: Dockerfile 
+    container_name: booking-management_service
+    restart: on-failure
+    ports:
+      - "6006:6006"
+    environment:
+      - PORT=6006
+      - SERVICE_NAME=Booking-Management-Service
+      - DATABASE_URL=postgresql://postgres2:postgres2@postgres2:5432/booking?schema=public
+    depends_on:
+      - postgres2
+    networks:
+      - micro2-network   
+            
+  # email:
+  #   image: sadi001/hotel-booking-email:main  # Use the Docker Hub image
+  #   container_name: email_service
+  #   restart: on-failure
+  #   ports:
+  #     - "5003:5003"
+  #   environment:
+  #     - PORT=5003
+  #     - SERVICE_NAME=Email-Service
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/email?schema=public
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - micro-network        
+
+  email:
+    build:
+     context: ./services/email
+     dockerfile: Dockerfile 
+    container_name: email-service
+    restart: on-failure
+    ports:
+      - "6003:6003"
+    environment:
+      - PORT=6006
+      - SERVICE_NAME=Booking-Management-Service
+      - DATABASE_URL=postgresql://postgres2:postgres2@postgres2:5432/email?schema=public
+    depends_on:
+      - postgres2
+    networks:
+      - micro2-network  
+
+
+  # api-gateway:
+  #   build:
+  #     context: ./api-gateway
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8081:8081"
+  #   volumes:
+  #     - ./api-gateway:/api-gateway
+  #   networks:
+  #     - micro-network   
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog2
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    volumes:
+      - mailhog2:/var/lib/mailhog
+    networks:
+      - micro2-network   
+  
+  redis-stack:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+      - "8002:8001"
+    volumes:
+      - redis-stack2:/var/lib/redis-stack
+    environment:
+      - REDIS_ARGS=--save 900 1
+    networks:
+      - micro2-network
+
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    ports:
+      - "5672:5672" # RabbitMQ main port
+      - "15672:15672" # RabbitMQ management UI port
+    volumes:
+      - rabbitmq_data2:/var/lib/rabbitmq
+    networks:
+      - micro2-network
+
+  kong-migration:
+    build:
+      context: ./config
+      dockerfile: Dockerfile
+    command: kong migrations bootstrap
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres2
+      KONG_PG_USER: postgres2
+      KONG_PG_PASSWORD: postgres2
+      KONG_PG_DATABASE: postgres2
+    depends_on:
+      - postgres2
+    networks:
+      - micro2-network
+
+  kong:
+    build:
+      context: ./config
+      dockerfile: Dockerfile
+    container_name: kong
+    restart: on-failure
+    networks:
+      - micro2-network
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres2
+      KONG_PG_USER: postgres2
+      KONG_PG_PASSWORD: postgres2
+      KONG_PG_DATABASE: postgres2
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001 
+      KONG_PLUGINSERVER_NAMES: js
+      KONG_PLUGINSERVER_JS_SOCKET: /usr/local/kong/js_pluginserver.sock
+      KONG_PLUGINSERVER_JS_START_CMD: /usr/local/bin/kong-js-pluginserver -v --plugins-directory /usr/local/kong/js-plugins
+      KONG_PLUGINSERVER_JS_QUERY_CMD: /usr/local/bin/kong-js-pluginserver --plugins-directory /usr/local/kong/js-plugins --dump-all-plugins
+      KONG_PLUGINS: bundled,oidc
+    depends_on:
+      - postgres2
+      - kong-migration
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 10s
+      retries: 100
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8443:8443"
+      - "8444:8444"
+
+  kong-prepare:
+    image: pantsel/konga:latest
+    command: "-c prepare -a postgres -u postgresql://postgres2:postgres2@host.docker.internal:5432/konga"
+    depends_on:
+      - postgres2
+    networks:
+      - micro2-network
+
+  konga:
+    image: pantsel/konga:latest
+    restart: always
+    networks:
+      - micro2-network
+    environment:
+      DB_ADAPTER: "postgres"
+      DB_HOST: "postgres2"
+      DB_USER: "postgres2"
+      DB_PASSWORD: "postgres2"
+      DB_DATABASE: "konga"
+      KONGA_HOOK_TIMEOUT: 120000
+    depends_on:
+      - postgres2
+      - kong
+    ports:
+      - "1337:1337"
+
+  keycloak:
+    image: bitnami/keycloak:latest
+    environment:
+      DB_VENDOR: postgres2
+      DB_ADDR: postgres2
+      DB_DATABASE: keycloak
+      DB_USER: postgres2
+      DB_PASSWORD: postgres2
+      KEYCLOAK_ADMIN_USER: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - 8081:8080
+    depends_on:
+      - postgres2
+    networks:
+      - micro2-network 
+
+networks:
+  micro2-network:
+    driver: bridge
+  keycloak-net:
+    driver: bridge
+  kong-net:
+    driver: bridge
+
+volumes:
+  postgres12:
+  mailhog2:
+  redis-stack2:
+  rabbitmq_data2:
+  kong_data2: {}
