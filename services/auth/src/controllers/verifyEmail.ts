@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '../../prisma';
 import { EmailVerificationSchema } from '@/schemas';
 import axios from 'axios';
-// import { EMAIL_SERVICE } from '@/config';
+
 
 const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -48,14 +48,6 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
 			where: { id: verificationCode.id },
 			data: { status: 'USED', verifiedAt: new Date() },
 		});
-
-		// send success email
-		// await axios.post(`${EMAIL_SERVICE}/emails/send`, {
-		// 	recipient: user.email,
-		// 	subject: 'Email Verified',
-		// 	body: 'Your email has been verified successfully',
-		// 	source: 'verify-email',
-		// });
 
 		return res.status(200).json({ message: 'Email verified successfully' });
 	} catch (error) {

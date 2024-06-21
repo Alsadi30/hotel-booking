@@ -1,7 +1,7 @@
-import prisma from '@/prisma';
+import prisma from '../prisma';
 import axios from 'axios';
 import { NextFunction, Request, Response } from 'express';
-import { RoomCreateDTOSchema } from '@/schemas';
+import { RoomCreateDTOSchema } from '../schemas';
 // import { INVENTORY_URL } from '@/config';
 
 const createRoom = async (
@@ -10,7 +10,6 @@ const createRoom = async (
     next: NextFunction
 ) => {
     try {
-        console.log(" User Information", req.headers["x-user-id"], req.headers["x-user-email"])
         // Validate request body
         const parsedBody = RoomCreateDTOSchema.safeParse(req.body);
         if (!parsedBody.success) {
@@ -37,13 +36,12 @@ const createRoom = async (
         }
 
         // Create Room
-        console.log(parsedBody.data)
         const room = await prisma.room.create({
             data: parsedBody.data
         });
-        console.log('Room created successfully', room.id);
 
         res.status(201).json({ ...room });
+
     } catch (err) {
         next(err);
     }

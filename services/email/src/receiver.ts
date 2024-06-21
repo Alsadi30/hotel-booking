@@ -29,8 +29,7 @@ const receiveFromQueue = async (
 
 receiveFromQueue('send-email', async (msg) => {
 	const parsedBody = JSON.parse(msg);
-	const userEmail = 'abd@gmail.com'
-	const { id, total_price } = parsedBody;
+	const { id, total_price, userEmail } = parsedBody;
 	const from = defaultSender;
 	const subject = 'Booking Confirmation';
 	const body = `Thank you for your Booking. Your Booking id is ${id}. Your order total is $${total_price}`;

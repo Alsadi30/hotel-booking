@@ -25,6 +25,7 @@ ENV PORT 5004
 # Expose port 5004 to the outside once the container has launched
 EXPOSE 5004
 
+
 # Copy the startup script into the container at /usr/local/bin
 COPY startup.sh /usr/local/bin/startup.sh
 

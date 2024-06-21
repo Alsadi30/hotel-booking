@@ -5,9 +5,7 @@ import morgan from 'morgan';
 import './events/onKeyExpires';
 import {
 	booking,
-	// 	getRoomDetails,
-	// 	getRooms,
-	// 	// 	updateProduct,
+	confirmBooking,
 } from './controllers';
 
 dotenv.config();
@@ -24,9 +22,7 @@ app.get('/health', (_req, res) => {
 });
 
 
-// app.get('/rooms/:id', getRoomDetails);
-// app.put('/products/:id', updateProduct);
-// app.get('/rooms', getRooms);
+app.put('/bookings/:id', confirmBooking);
 app.post('/bookings', booking);
 
 // 404 handler

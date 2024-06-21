@@ -11,8 +11,8 @@ export const BOOKING_TTL = 20
 export const REDIS_HOST = process.env.REDIS_HOST || 'host.docker.internal';
 
 export const ROOM_SERVICE =
-    process.env.ROOM_SERVICE_URL || 'http://host.docker.internal:5005';
+    process.env.ROOM_SERVICE_URL || 'http://host.docker.internal:6005';
 export const EMAIL_SERVICE =
-    process.env.EMAIL_SERVICE_URL || 'http://host.docker.internal:5003';
+    process.env.EMAIL_SERVICE_URL || 'http://host.docker.internal:6003';
 
 export const QUEUE_URL = process.env.QUEUE_URL || 'amqp://host.docker.internal';

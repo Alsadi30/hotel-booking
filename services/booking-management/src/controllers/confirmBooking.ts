@@ -1,6 +1,5 @@
 import prisma from '@/prisma';
 import sendToQueue from '@/queue';
-// import { HotelUpdateDTOSchema } from '@/schemas';
 import { Request, Response, NextFunction } from 'express';
 
 const confirmBooking = async (
@@ -20,6 +19,8 @@ const confirmBooking = async (
             return res.status(404).json({ message: 'booking not found' });
         }
 
+        // TODO: Check the booking sessionId is valid or not
+
         // update the hotel
         const updatedBooking = await prisma.booking.update({
             where: {
@@ -30,9 +31,8 @@ const confirmBooking = async (
             }
         });
 
-      
-
-        //TODO: Send Email
+        // send confirmation email 
+        sendToQueue('send-email', JSON.stringify(updatedBooking))
 
         res.status(200).json({ data: updatedBooking });
     } catch (error) {

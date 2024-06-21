@@ -34,3 +34,4 @@ RUN chmod +x /usr/local/bin/startup.sh
 
 # Set the command to run the startup script
 CMD ["/usr/local/bin/startup.sh"]
+

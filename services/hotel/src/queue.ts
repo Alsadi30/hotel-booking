@@ -1,12 +1,11 @@
 import amqp from 'amqplib';
-import { QUEUE_URL } from './config';
 import { v4 as uuidv4 } from 'uuid';
 
 const sendToQueue = async (queue: string, message: string) => {
-	const connection = await amqp.connect(QUEUE_URL);
+	const connection = await amqp.connect('amqp://host.docker.internal');
 	const channel = await connection.createChannel();
 
-	const exchange = 'booking';
+	const exchange = 'hotel';
 	await channel.assertExchange(exchange, 'direct', { durable: true });
 
 	const correlationId = uuidv4();
@@ -23,8 +22,6 @@ const sendToQueue = async (queue: string, message: string) => {
 			contentType: 'application/json',
 		}
 	);
-
-	console.log(`Sent ${message} to ${queue} with correlationId ${correlationId}`);
 
 	// Return a promise that resolves with the response
 	return new Promise<string>((resolve, reject) => {

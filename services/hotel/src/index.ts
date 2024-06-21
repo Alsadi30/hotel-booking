@@ -4,9 +4,9 @@ import cors from 'cors';
 import morgan from 'morgan';
 import {
 	createHotel,
-	// 	getProductDetails,
+	getHotelDetails,
 	getHotels,
-	// 	updateProduct,
+	updateHotel,
 } from './controllers';
 
 dotenv.config();
@@ -21,8 +21,8 @@ app.get('/health', (_req, res) => {
 });
 
 
-// app.get('/products/:id', getProductDetails);
-// app.put('/products/:id', updateProduct);
+app.get('/hotels/:id', getHotelDetails);
+app.put('/hotels/:id', updateHotel);
 app.get('/hotels', getHotels);
 app.post('/hotels', createHotel);
 

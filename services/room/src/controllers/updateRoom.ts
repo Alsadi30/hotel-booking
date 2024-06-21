@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '@/prisma';
-import { RoomUpdateDTOSchema } from '@/schemas';
+import prisma from '../prisma';
+import { RoomUpdateDTOSchema } from '../schemas';
 
 const updateRoom = async (
     req: Request,
@@ -9,7 +9,10 @@ const updateRoom = async (
 ) => {
     try {
         // check if the room exists
-        const { id } = req.params;
+        let id = req.params?.id;
+        if (!id) {
+            id = req.body.roomId
+        }
         const room = await prisma.room.findUnique({
             where: { id },
         });
@@ -20,8 +23,8 @@ const updateRoom = async (
 
         // update the room
         const parsedBody = RoomUpdateDTOSchema.safeParse(req.body);
+
         if (!parsedBody.success) {
-            console.log(parsedBody.error.errors)
             return res.status(400).json(parsedBody.error.errors);
         }
 
@@ -33,7 +36,7 @@ const updateRoom = async (
             status = "Available"
         }
         else {
-            console.log("else")
+
             return res.status(400).json({ message: 'Invalid action type' });
         }
 

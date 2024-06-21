@@ -20,7 +20,7 @@ class Oidc {
       token = ${token.length}
       keycloak_introspection_url = ${keycloak_introspection_url}
       client_id = ${client_id}
-      client_secret = ${client_secret}  
+      client_secret = ${client_secret}
       `)
 
       if (!token) {
@@ -79,9 +79,9 @@ module.exports = {
     {
       keycloak_introspection_url: {
         type: 'string',
-        required: true,
-        description:
-          "The URL of the external authentication server's validation endpoint."
+        required: true
+        // description:
+        //   "The URL of the external authentication server's validation endpoint."
       }
     },
     {

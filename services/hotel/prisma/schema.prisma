@@ -14,7 +14,8 @@ datasource db {
   url      =  "postgresql://postgres:postgres@host.docker.internal:5432/hotel_db?schema=public"
 }
 
- 
+
+
 
 model Hotel {
   id          String   @id @default(cuid())

@@ -10,7 +10,6 @@ const createHotel = async (
 	next: NextFunction
 ) => {
 	try {
-		console.log(" User Information", req.headers["x-user-id"], req.headers["x-user-email"])
 		// Validate request body
 		const parsedBody = HotelCreateDTOSchema.safeParse(req.body);
 		if (!parsedBody.success) {
@@ -39,7 +38,6 @@ const createHotel = async (
 		const hotel = await prisma.hotel.create({
 			data: parsedBody.data,
 		});
-		console.log('Hotel created successfully', hotel.id);
 
 		res.status(201).json({ ...hotel });
 	} catch (err) {

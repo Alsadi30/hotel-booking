@@ -8,6 +8,8 @@ import {
 	getRooms,
 	updateRoom,
 } from './controllers';
+import './receiver';
+
 
 dotenv.config();
 

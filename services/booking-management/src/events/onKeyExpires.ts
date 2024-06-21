@@ -1,5 +1,5 @@
 import { REDIS_HOST, REDIS_PORT } from '@/config';
-import { clearBooking } from '@/services';
+import { clearBooking } from '../services';
 import { Redis } from 'ioredis';
 
 const redis = new Redis({

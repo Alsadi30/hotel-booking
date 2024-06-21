@@ -4,7 +4,6 @@ import prisma from '@/prisma';
 import sendToQueue from '@/queue';
 import redis from '@/redis';
 import { BookingDTOSchema } from '@/schemas';
-// import sendToQueue from '@/queue';
 import axios from 'axios';
 import { randomUUID } from 'crypto';
 import { Request, Response, NextFunction } from 'express';
@@ -12,6 +11,9 @@ import { Request, Response, NextFunction } from 'express';
 
 const booking = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const user_id = req.headers['x-user-id'] as string
+        const email = req.headers['x-user-email'] as string
+
         // validate request
         const parsedBody = BookingDTOSchema.safeParse(req.body);
         if (!parsedBody.success) {
@@ -25,13 +27,20 @@ const booking = async (req: Request, res: Response, next: NextFunction) => {
         }
         const roomDetails = await Promise.all(
             Object.values(roomIds).map(async (id) => {
-                const { data: room } = await axios.get(`${ROOM_SERVICE}/rooms/${id}`)
+
+                //! HTTP request
+                // const { data: room } = await axios.get(`${ROOM_SERVICE}/rooms/${id}`)
+
+                //**   API CALL TO RABBITMQ
+                let room: any = await sendToQueue('get-room', JSON.stringify({ roomId: id, action: "single-get" }));
+                let ParsedRoom = JSON.parse(room)
                 return {
-                    price: room.price_per_day as number,
-                    discount: room.discount_price as number
+                    price: ParsedRoom.body.price_per_day,
+                    discount: ParsedRoom.body.discount_price
                 }
             })
         )
+
 
         const date1 = new Date(parsedBody.data.check_in_date);
         const date2 = new Date(parsedBody.data.check_out_date);
@@ -53,19 +62,16 @@ const booking = async (req: Request, res: Response, next: NextFunction) => {
         // update room
         await Promise.all(
             Object.values(roomIds).map(async (id) => {
-                await axios.put(
-                    `${ROOM_SERVICE}/rooms/${id}`,
-                    {
-                        actionType: 'IN',
-                    }
-                );
+                //! Http request
+                // await axios.put(
+                //     `${ROOM_SERVICE}/rooms/${id}`,
+                //     {
+                //         actionType: 'IN',
+                //     }
+                // );
+                await sendToQueue('update-room', JSON.stringify({ roomId: id, actionType: "IN", action: "update" }))
             })
         )
-        const user_id = "lsdjflksdj"
-
-        // TODO: will handle tax calculation later
-        const tax = 0;
-        // const grandTotal = subtotal + tax;
 
         // create order
         const booking = await prisma.booking.create({
@@ -79,16 +85,10 @@ const booking = async (req: Request, res: Response, next: NextFunction) => {
 
         });
 
-        //TODO: Add booking id to Redis
-
-
 
         const bookingSessionId = randomUUID();
 
-
-
         await redis.setex(`sessions:${bookingSessionId}`, BOOKING_TTL, bookingSessionId);
-
 
 
         await redis.hset(
@@ -97,25 +97,17 @@ const booking = async (req: Request, res: Response, next: NextFunction) => {
             JSON.stringify(booking)
         );
 
-        let userEmail = "abdullahsadi30@gmail.com"
-        //TODO: send email
-        // await axios.post(`${EMAIL_SERVICE}/emails/send`, {
-        // recipient: parsedBody.data.userEmail,
-        // 	subject: 'Order Confirmation',
-        // 	body: `Thank you for your order. Your order id is ${order.id}. Your order total is $${grandTotal}`,
-        // 	source: 'Checkout',
-        // });
 
-        // send to queue
+        booking.userEmail = email
+
+        //** Sending mail
         sendToQueue('send-email', JSON.stringify(booking));
-        // sendToQueue(
-        // 	'clear-cart',
-        // 	JSON.stringify({ cartSessionId: parsedBody.data.cartSessionId })
-        // );
 
         return res.status(201).json(booking);
+
     } catch (error) {
-        next(error);
+        console.log(error)
+        next(error)
     }
 };
 

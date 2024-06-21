@@ -24,6 +24,7 @@ enum BookingStatus {
 model Booking {
   id             String   @id @default(cuid())
   hotel_id       String?
+  userEmail      String?
   user_id        String
   room_id        Json
   check_in_date  DateTime

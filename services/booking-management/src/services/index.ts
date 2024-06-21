@@ -1,5 +1,6 @@
 
 import { ROOM_SERVICE } from '@/config';
+import sendToQueue from '@/queue';
 import redis from '@/redis';
 import axios from 'axios';
 
@@ -14,12 +15,15 @@ export const clearBooking = async (id: string) => {
 
 		await Promise.all(
 			Object.values(roomIds[0].room_id).map(async (id) => {
-				await axios.put(
-					`${ROOM_SERVICE}/rooms/${id}`,
-					{
-						actionType: 'OUT',
-					}
-				);
+				// await axios.put(
+				// 	`${ROOM_SERVICE}/rooms/${id}`,
+				// 	{
+				// 		actionType: 'OUT',
+				// 	}
+				// );
+				// Call for RabbitMQ
+				await sendToQueue('update-room', JSON.stringify({ roomId: id, actionType: "OUT", action: "update" }))
+
 			})
 		)
 

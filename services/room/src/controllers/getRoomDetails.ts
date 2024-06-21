@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '@/prisma';
+import prisma from '../prisma';
 import axios from 'axios';
 // import { INVENTORY_URL } from '@/config';
 
@@ -9,7 +9,11 @@ const getRoomDetails = async (
     next: NextFunction
 ) => {
     try {
-        const { id } = req.params;
+        let id = req.params?.id;
+
+        if (!id) {
+            id = req.body.roomId
+        }
         const room = await prisma.room.findUnique({
             where: { id },
         });
@@ -17,18 +21,6 @@ const getRoomDetails = async (
         if (!room) {
             return res.status(404).json({ message: 'Room not found' });
         }
-
-
-        // await prisma.room.update({
-        //     where: { id: room.id },
-        // data: {
-        //     inventoryId: inventory.id,
-        // },
-        // });
-        // console.log(
-        //     'Product updated successfully with inventory id',
-        //     inventory.id
-        // );
 
         return res.status(200).json({
             ...room
