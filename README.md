@@ -51,13 +51,13 @@ cd hotel-booking-microservices
 
 ### Environment Setup
 
-Create a \`.env\` file in the root directory based on the provided \`example.env\`. You can do this by copying \`example.env\` to \`.env\` and filling in your actual configuration values.
+Create a `.env` file in the root directory based on the provided `example.env`. You can do this by copying `example.env` to `.env` and filling in your actual configuration values.
 
 \`\`\`bash
 cp example.env .env
 \`\`\`
 
-**Example \`example.env\` file:**
+**Example `example.env` file:**
 
 \`\`\`dotenv
 # Database Configuration for PostgreSQL
@@ -109,7 +109,7 @@ KEYCLOAK_ADMIN_PASSWORD= "your_keycloak_admin_password"
 
 ### Building and Running the Services
 
-Build and start the services defined in the \`docker-compose.yml\` file with the following command:
+Build and start the services defined in the `docker-compose.yml` file with the following command:
 
 \`\`\`bash
 docker-compose up --build
@@ -117,7 +117,7 @@ docker-compose up --build
 
 This command will:
 - Build the Docker images (if they are not already built).
-- Start all the containers defined in the \`docker-compose.yml\` file.
+- Start all the containers defined in the `docker-compose.yml` file.
 
 To run the services in detached mode (in the background), use:
 
@@ -149,21 +149,21 @@ Here is a brief overview of the main services included in this project:
 
 To stop the running services, execute:
 
-\`\`\`bash
+```bash
 docker-compose down
-\`\`\`
+```
 
-This command stops and removes all the containers defined in \`docker-compose.yml\`.
+This command stops and removes all the containers defined in `docker-compose.yml`.
 
 ### Viewing Logs
 
 To view the logs for all services, use:
 
-\`\`\`bash
+```bash
 docker-compose logs -f
-\`\`\`
+```
 
-To view the logs for a specific service (e.g., \`auth_service\`), use:
+To view the logs for a specific service (e.g., `auth_service`), use:
 
 \`\`\`bash
 docker-compose logs -f auth_service
@@ -171,24 +171,24 @@ docker-compose logs -f auth_service
 
 ### Accessing PgAdmin
 
-PgAdmin can be accessed via your browser at \`http://localhost:5050\` with the credentials specified in your \`.env\` file (\`PGADMIN_DEFAULT_EMAIL\` and \`PGADMIN_DEFAULT_PASSWORD\`).
+PgAdmin can be accessed via your browser at `http://localhost:5050` with the credentials specified in your `.env` file (`PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD`).
 
 ### Accessing Konga
 
-Konga can be accessed via your browser at \`http://localhost:1337\` with the credentials specified during setup.
+Konga can be accessed via your browser at `http://localhost:1337` with the credentials specified during setup.
 
 ## Contributing
 
 We welcome contributions! To contribute to this project, please follow these steps:
 
 1. Fork the repository.
-2. Create a new branch (\`git checkout -b feature-branch\`).
+2. Create a new branch (`git checkout -b feature-branch`).
 3. Make your changes.
-4. Commit your changes (\`git commit -m 'Add new feature'\`).
-5. Push to the branch (\`git push origin feature-branch\`).
+4. Commit your changes (`git commit -m 'Add new feature'`).
+5. Push to the branch (`git push origin feature-branch`).
 6. Open a Pull Request.
 
-Please ensure your code follows our coding standards and include appropriate tests.
+Please ensure your code follows our coding standards and includes appropriate tests.
 
 ## License
 
