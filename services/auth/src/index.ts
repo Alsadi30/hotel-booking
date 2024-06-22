@@ -20,7 +20,6 @@ app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'UP' });
 });
 
-console.log('hello1')
 // routes
 app.post('/register', userRegistration);
 app.post('/login', userLogin);

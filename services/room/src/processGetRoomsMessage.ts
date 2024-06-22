@@ -44,7 +44,6 @@ class MockResponse {
 
 // Function to process messages using getRooms
 const processGetRoomsMessage = async (message: string, respond: (response: string) => void) => {
-    console.log(message)
     const mockReq = new MockRequest(JSON.parse(message)); // Parse message as JSON for request body
     const mockRes = new MockResponse();
 
@@ -54,7 +53,6 @@ const processGetRoomsMessage = async (message: string, respond: (response: strin
             await getRoomDetails(mockReq as any as Request, mockRes as any as Response, () => { })
             respond(JSON.stringify(mockRes.getResponse()));
         } else if (msg["action"] === "update") {
-            console.log('iam calling from if else')
             await updateRoom(mockReq as any as Request, mockRes as any as Response, () => { })
             respond(JSON.stringify(mockRes.getResponse()));
         }

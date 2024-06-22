@@ -6,9 +6,9 @@ services:
     container_name: postgres
     restart: on-failure
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -26,8 +26,8 @@ services:
     container_name: pgadmin
     restart: on-failure
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "5050:80"
       - "5051:443"
@@ -35,15 +35,15 @@ services:
       - micro-network
 
   auth:
-    image: sadi001/hotel-booking-auth:main  # Use the Docker Hub image
+    image: sadi001/hotel-booking-auth:main
     container_name: auth_service
     restart: on-failure
     ports:
       - "5001:5001"
     environment:
-      - PORT=5001
+      - PORT=${PORT_AUTH}
       - SERVICE_NAME=Auth-Service
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/auth?schema=public
+      - DATABASE_URL=${DATABASE_URL_AUTH}
     depends_on:
       - postgres
     networks:
@@ -56,9 +56,9 @@ services:
     ports:
       - "5002:5002"
     environment:
-      - PORT=5002
+      - PORT=${PORT_USER}
       - SERVICE_NAME=User-Service
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/user?schema=public
+      - DATABASE_URL=${DATABASE_URL_USER}
     depends_on:
       - postgres
     networks:
@@ -71,9 +71,9 @@ services:
     ports:
       - "5004:5004"
     environment:
-      - PORT=5004
+      - PORT=${PORT_HOTEL}
       - SERVICE_NAME=Hotel-Service
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/hotel?schema=public
+      - DATABASE_URL=${DATABASE_URL_HOTEL}
     depends_on:
       - postgres
       - rabbitmq
@@ -87,9 +87,9 @@ services:
     ports:
       - "5005:5005"
     environment:
-      - PORT=5005
+      - PORT=${PORT_ROOM}
       - SERVICE_NAME=Room-Service
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/room?schema=public
+      - DATABASE_URL=${DATABASE_URL_ROOM}
     depends_on:
       - postgres
       - rabbitmq
@@ -103,9 +103,9 @@ services:
     ports:
       - "5006:5006"
     environment:
-      - PORT=5006
+      - PORT=${PORT_BOOKING}
       - SERVICE_NAME=Booking-management-Service
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/booking-management?schema=public
+      - DATABASE_URL=${DATABASE_URL_BOOKING}
     depends_on:
       - postgres
       - rabbitmq
@@ -120,9 +120,9 @@ services:
     ports:
       - "5003:5003"
     environment:
-      - PORT=5003
+      - PORT=${PORT_EMAIL}
       - SERVICE_NAME=Email-Service
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/email?schema=public
+      - DATABASE_URL=${DATABASE_URL_EMAIL}
     depends_on:
       - postgres
       - mailhog
@@ -134,7 +134,7 @@ services:
       context: ./api-gateway
       dockerfile: Dockerfile
     ports:
-      - "8081:8081"
+      - "8082:8082"
     volumes:
       - ./api-gateway:/api-gateway
     networks:
@@ -179,11 +179,11 @@ services:
       dockerfile: Dockerfile
     command: kong migrations bootstrap
     environment:
-      KONG_DATABASE: postgres
-      KONG_PG_HOST: postgres
-      KONG_PG_USER: postgres
-      KONG_PG_PASSWORD: postgres
-      KONG_PG_DATABASE: postgres
+      KONG_DATABASE: ${KONG_DATABASE}
+      KONG_PG_HOST: ${KONG_PG_HOST}
+      KONG_PG_USER: ${KONG_PG_USER}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE}
     depends_on:
       - postgres
     networks:
@@ -198,11 +198,11 @@ services:
     networks:
       - micro-network
     environment:
-      KONG_DATABASE: postgres
-      KONG_PG_HOST: postgres
-      KONG_PG_USER: postgres
-      KONG_PG_PASSWORD: postgres
-      KONG_PG_DATABASE: postgres
+      KONG_DATABASE: ${KONG_DATABASE}
+      KONG_PG_HOST: ${KONG_PG_HOST}
+      KONG_PG_USER: ${KONG_PG_USER}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE}
       KONG_ADMIN_LISTEN: 0.0.0.0:8001 
       KONG_PLUGINSERVER_NAMES: js
       KONG_PLUGINSERVER_JS_SOCKET: /usr/local/kong/js_pluginserver.sock
@@ -228,6 +228,7 @@ services:
     command: "-c prepare -a postgres -u postgresql://postgres:postgres@postgres:5432/konga"
     depends_on:
       - postgres
+      - kong
     networks:
       - micro-network
 
@@ -239,9 +240,9 @@ services:
     environment:
       DB_ADAPTER: "postgres"
       DB_HOST: "postgres"
-      DB_USER: "postgres"
-      DB_PASSWORD: "postgres"
-      DB_DATABASE: "konga"
+      DB_USER: ${KONGA_DB_USER}
+      DB_PASSWORD: ${KONGA_PG_PASSWORD}
+      DB_DATABASE: ${KONGA_DB_DATABASE}
       KONGA_HOOK_TIMEOUT: 120000
     depends_on:
       - postgres
@@ -255,10 +256,10 @@ services:
       DB_VENDOR: postgres
       DB_ADDR: postgres
       DB_DATABASE: keycloak
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      KEYCLOAK_ADMIN_USER: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      DB_USER: ${KEY_DB_USER}
+      DB_PASSWORD: ${KEY_DB_PASSWORD}
+      KEYCLOAK_ADMIN_USER: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     ports:
       - 8081:8080
     depends_on:
@@ -269,10 +270,6 @@ services:
 networks:
   micro-network:
     driver: bridge
-  # keycloak-net:
-  #   driver: bridge
-  # kong-net:
-  #   driver: bridge
 
 volumes:
   postgres1:

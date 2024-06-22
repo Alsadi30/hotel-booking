@@ -1,13 +1,6 @@
 import { z } from 'zod';
 
 
-
-// export enum ActionType {
-// 	"BOOKED",
-// 	"IN",
-// 	"OUT"
-// }
-
 export const RoomCreateDTOSchema = z.object({
 	hotel_id: z.string(),
 	room_number: z.number(),

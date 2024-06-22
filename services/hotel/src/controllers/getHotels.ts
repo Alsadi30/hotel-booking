@@ -7,8 +7,6 @@ const getHotels = async (
     next: NextFunction
 ) => {
     try {
-        console.log("Request Header", { userId: req.headers['x-user-id'], email: req.headers['x-user-email'] })
-
         const hotels = await prisma.hotel.findMany({
             select: {
                 id: true,

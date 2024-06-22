@@ -24,7 +24,6 @@ const getHotelDetails = async (
 
         // Process the rooms response as needed
         const rooms = JSON.parse(roomsResponse);
-        console.log(rooms.body.data)
 
         return res.status(200).json({
             ...hotel,

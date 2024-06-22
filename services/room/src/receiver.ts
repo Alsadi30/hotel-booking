@@ -21,8 +21,6 @@ const receiveFromQueue = async (queue: string) => {
 			async (msg) => {
 				if (msg) {
 					const messageContent = msg.content.toString();
-					console.log(`Received message : ${messageContent}`);
-					console.log(`Message properties:`, msg.properties);
 
 					// Use the adapted function to process the message
 					processGetRoomsMessage(messageContent, (response) => {
