@@ -44,22 +44,22 @@ Before you begin, ensure you have the following installed on your local machine:
 
 First, clone the repository to your local machine using Git:
 
-\`\`\`bash
+``` bash
 git clone https://github.com/your-username/hotel-booking-microservices.git
 cd hotel-booking-microservices
-\`\`\`
+```
 
 ### Environment Setup
 
 Create a `.env` file in the root directory based on the provided `example.env`. You can do this by copying `example.env` to `.env` and filling in your actual configuration values.
 
-\`\`\`bash
+``` bash
 cp example.env .env
-\`\`\`
+```
 
 **Example `example.env` file:**
 
-\`\`\`dotenv
+``` dotenv
 # Database Configuration for PostgreSQL
 POSTGRES_USER= "your_postgres_user"
 POSTGRES_PASSWORD= "your_postgres_password"
@@ -105,25 +105,25 @@ KEY_DB_USER= "your_keycloak_db_user"
 KEY_DB_PASSWORD= "your_keycloak_db_password"
 KEYCLOAK_ADMIN_USER= "your_keycloak_admin_user"
 KEYCLOAK_ADMIN_PASSWORD= "your_keycloak_admin_password"
-\`\`\`
+```
 
 ### Building and Running the Services
 
 Build and start the services defined in the `docker-compose.yml` file with the following command:
 
-\`\`\`bash
+``` bash
 docker-compose up --build
-\`\`\`
-
+```
+```
 This command will:
 - Build the Docker images (if they are not already built).
 - Start all the containers defined in the `docker-compose.yml` file.
 
 To run the services in detached mode (in the background), use:
 
-\`\`\`bash
+``` bash
 docker-compose up --build -d
-\`\`\`
+```
 
 ## Services Overview
 
@@ -149,7 +149,7 @@ Here is a brief overview of the main services included in this project:
 
 To stop the running services, execute:
 
-```bash
+``` bash
 docker-compose down
 ```
 
@@ -159,15 +159,15 @@ This command stops and removes all the containers defined in `docker-compose.yml
 
 To view the logs for all services, use:
 
-```bash
+``` bash
 docker-compose logs -f
 ```
 
 To view the logs for a specific service (e.g., `auth_service`), use:
 
-\`\`\`bash
+``` bash
 docker-compose logs -f auth_service
-\`\`\`
+```
 
 ### Accessing PgAdmin
 
