@@ -114,7 +114,7 @@ Build and start the services defined in the `docker-compose.yml` file with the f
 ``` bash
 docker-compose up --build
 ```
-```
+
 This command will:
 - Build the Docker images (if they are not already built).
 - Start all the containers defined in the `docker-compose.yml` file.
